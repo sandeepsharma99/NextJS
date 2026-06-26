@@ -14,7 +14,7 @@ app.use(userRoutes)
 const PORT = 3000
 
 
-
+console.log(PORT)
 mongoose.connect(process.env.mongo_url)
 .then(()=>{
     console.log(`database connected..`)

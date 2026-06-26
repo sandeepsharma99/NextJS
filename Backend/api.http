@@ -16,3 +16,8 @@ content-type:application/json
     "email": "a1@gmail.com",
     "password": "000"
 }
+
+###
+# To get the token, run the /login request above and copy the token value here.
+GET http://localhost:3000/get_user_and_profile HTTP/1.1
+Authorization: Bearer <your_token_here>
