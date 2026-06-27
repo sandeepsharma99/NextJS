@@ -12,6 +12,7 @@ app.use(express.json())
 app.use(cors())
 app.use(postRoutes)
 app.use(userRoutes)
+app.use(express.static('uploads'))
 
 
 console.log(PORT)

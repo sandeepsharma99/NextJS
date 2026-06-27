@@ -2,9 +2,9 @@ POST http://localhost:3000/register HTTP/1.1
 content-type:application/json
 
 {
-    "name": "a1",
-    "username": "a1",
-    "email": "a1@gmail.com",
+    "name": "a2",
+    "username": "a2",
+    "email": "a2@gmail.com",
     "password": "000"
 }
 
@@ -13,7 +13,7 @@ POST http://localhost:3000/login HTTP/1.1
 content-type:application/json
 
 {
-    "email": "a1@gmail.com",
+    "email": "a2@gmail.com",
     "password": "000"
 }
 
@@ -23,7 +23,7 @@ GET http://localhost:3000/get_user_and_profile
 content-type:application/json
 
 {
-    "token" : "be8477c4a294c7e024808cb19bf535d62e5640747f67e443ff52c9b0532841d8"
+    "token" : "acc53d46c7e335e5f41d8b67f84ffd6b27b53778796f9c6bd4211e5968d1c43b"
 }
 
 
@@ -50,3 +50,8 @@ Content-Type: application/json
         }
     ]
 }
+
+
+###
+
+GET  http://localhost:3000/user/get_all_users
