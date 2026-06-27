@@ -19,5 +19,34 @@ content-type:application/json
 
 ###
 # To get the token, run the /login request above and copy the token value here.
-GET http://localhost:3000/get_user_and_profile HTTP/1.1
-Authorization: Bearer <your_token_here>
+GET http://localhost:3000/get_user_and_profile
+content-type:application/json
+
+{
+    "token" : "be8477c4a294c7e024808cb19bf535d62e5640747f67e443ff52c9b0532841d8"
+}
+
+
+### 
+POST http://localhost:3000/update_profile_data
+Content-Type: application/json
+
+{
+    "token":"be8477c4a294c7e024808cb19bf535d62e5640747f67e443ff52c9b0532841d8",
+    "bio":"",
+    "currentPost":"CTO",
+    "pastWork":[
+        {
+            "company":"Microsoft",
+            "position":"CTO",
+            "years":"2+"
+        }
+    ],
+    "education":[
+        {
+            "school":"IIT",
+            "degree":"BCA",
+            "fieldOfStudy":"2015-2019"
+        }
+    ]
+}

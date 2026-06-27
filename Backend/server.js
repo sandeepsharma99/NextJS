@@ -5,13 +5,13 @@ import mongoose from "mongoose"
 import postRoutes from "./routes/post.routes.js"
 import userRoutes from './routes/user.routes.js'
 
+const PORT = 3000
 dotenv.config()
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(postRoutes)
 app.use(userRoutes)
-const PORT = 3000
 
 
 console.log(PORT)

@@ -4,15 +4,13 @@ import {
     login,
     uploadProfilePicture,
     updateUserProfile,
-    getUserAndProfile
+    getUserAndProfile,
+    updateProfileData
 } from '../controllers/user.controller.js';
 import multer from 'multer'
-import { upload } from "../middleware/multer.middleware.js";
 
 
 const router = Router();
-router.route('/register').post(register);
-router.route('/login').post(login)
 
 const storage = multer.diskStorage({
     destination:(req,res,cb)=>{
@@ -24,8 +22,12 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({storage:storage})
-router.route("/update_profile_picture").post(upload.single('profile_picture'),uploadProfilePicture)
+router.route("/update_profile_picture").post(upload.single('profile_Picture'),uploadProfilePicture)
+
+router.route('/register').post(register);
+router.route('/login').post(login)
 router.route('/user_update').post(updateUserProfile)
 router.route("/get_user_and_profile").get(getUserAndProfile)
+router.route("/update_profile_data").post(updateProfileData);
 
 export default router;

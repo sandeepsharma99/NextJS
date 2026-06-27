@@ -13,10 +13,11 @@ export const register = async (req, res) => {
       email,
     });
     if (user)
-      return res.status(400).json({ message: "User is already exists" });
+      return res.status(400).json({ message: "User is already exists with this email" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // This creates a User object in memory.
     const newUser = new User({
       name,
       email,
@@ -40,11 +41,9 @@ export const login = async(req,res) => {
         
         const user = await User.findOne({email});
         if (!user) return res.status(404).json({message:"user doesnot exist"})
-        if (!user) return res.status(401).json({message:"Invalid credentials"})
         const isMatch = await bcrypt.compare(password,user.password)
         if(!isMatch) return res.status(404).json({message:"Invalid credentials"})
-        if(!isMatch) return res.status(401).json({message:"Invalid credentials"})
-        const token = crypto.randomBytes(32).toString('hex')
+        const token = crypto.randomBytes(32).toString('hex')  // Generate a secure random token for the authenticated user 
         await User.updateOne({_id:user._id},{$set: {token: token}})
         return res.json({token})
     }catch(err){
@@ -54,16 +53,14 @@ export const login = async(req,res) => {
 };
 
 export const uploadProfilePicture = async(req,res)=>{
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
-  if (token == null) return res.sendStatus(401); // Unauthorized
-
+  const {token} = req.body
+  console.log(token)
   try{
       const user = await User.findOne({token: token})
       if(!user){
           return res.status(404).json({message:"User not found"})
       }
-      user.profilePicture = req.file.filename
+      user.profile_Picture = req.file.filename
       await user.save()
       return res.json({message:"Profile picture updated successfully."})
   }catch(err){
@@ -72,25 +69,23 @@ export const uploadProfilePicture = async(req,res)=>{
 }
 
 export const updateUserProfile = async(req,res)=>{
-  try{
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
+  try{  
+    const {token,...newUserData} = req.body
 
     const user = await User.findOne({token: token})
     if(!user){
       return res.status(404).json({message:"User not found"})
     }
 
-    const { ...newUserData } = req.body;
-    const {username,email} = newUserData;
 
-    if (username || email) {
-      const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-      if(existingUser && String(existingUser._id) !== String(user._id)){
-        return res.status(400).json({message:"Username or email already exists"})
+    const {username,email} = newUserData;
+    const existingUser = await User.findOne({$or: [{username},{email}]});
+    if(existingUser){
+      if(existingUser || String(existingUser._id) !== String(user._id)){
+        return res.status(400).json({message:"User already Exists"})
       }
     }
+    
     Object.assign(user, newUserData);
     await user.save();
     return res.status(200).json({message: "User profile updated successfully."})
@@ -101,19 +96,41 @@ export const updateUserProfile = async(req,res)=>{
 
 export const getUserAndProfile = async(req,res) =>{
   try{
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
+    const {token} = req.body
 
     const user = await User.findOne({token: token})
+
     if(!user){
       return res.status(404).json({message:"User not found"});
     }
     const userProfile = await Profile.findOne({userId:user._id})
-    .populate("userId");
+    .populate("userId",'name email username profile_Picture');
 
     return res.json(userProfile)
   }catch(err){
     return res.status(500).json({message:err.message})
   }
 }
+
+export const updateProfileData = async (req,res)=>{
+  try{
+    const {token,...newProfileData} = req.body
+    const userProfile = await User.findOne({token:token})
+    if(!userProfile){
+      return res.status(404).json({message:"User Not found"})
+    }
+    const profile_to_update = await Profile.findOne({userId:userProfile._id})
+    if(!profile_to_update){
+      return res.status(404).json({message:"Profile not found for this user"})
+    }
+    
+    Object.assign(profile_to_update, newProfileData);
+    await profile_to_update.save();
+
+    return res.json({message:"Profile Updated successfully."})
+  }catch(err){
+     return res.status(500).json({message:err.message})
+  }
+}
+
+  
